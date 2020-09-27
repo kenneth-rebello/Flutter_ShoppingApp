@@ -9,6 +9,8 @@ import './screens/orders_screen.dart';
 import './screens/cart_screen.dart';
 import './screens/product_details.dart';
 import './screens/products_overview.dart';
+import './screens/user_products.dart';
+import './screens/edit_product.dart';
 
 void main() {
   runApp(MyApp());
@@ -35,6 +37,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.purple,
           accentColor: Colors.deepOrange,
+          errorColor: Colors.red,
           fontFamily: 'Lato',
         ),
         home: ProductsOverview(),
@@ -42,6 +45,8 @@ class MyApp extends StatelessWidget {
           ProductDetails.routeName: (ctx) => ProductDetails(),
           CartScreen.routeName: (ctx) => CartScreen(),
           OrdersScreen.routeName: (ctx) => OrdersScreen(),
+          UserProducts.routeName: (ctx) => UserProducts(),
+          EditProductScreen.routeName: (ctx) => EditProductScreen()
         },
       ),
     );

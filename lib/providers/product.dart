@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:shop_app/screens/edit_product.dart';
 
 class Product with ChangeNotifier {
   final String id;
@@ -16,6 +17,14 @@ class Product with ChangeNotifier {
     @required this.imageUrl,
     this.isFavorite = false,
   });
+
+  Product.fromTemp(TempProduct newProd)
+      : id = newProd.id,
+        title = newProd.title,
+        price = newProd.price,
+        description = newProd.description,
+        imageUrl = newProd.imageUrl,
+        isFavorite = false;
 
   void toggleFavorite() {
     isFavorite = !isFavorite;
