@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import '../providers/cart.dart';
+import 'package:http/http.dart' as http;
 
 class OrderItem {
   final String id;
@@ -22,13 +25,59 @@ class Orders with ChangeNotifier {
     return [..._orders];
   }
 
-  void addOrder(List<CartItem> cart, double total) {
+  Future<void> fetchOrders() async {
+    final url = 'https://native-shopapp-f4694.firebaseio.com/orders.json';
+    final response = await http.get(url);
+    final extracted = json.decode(response.body) as Map<String, dynamic>;
+    if (extracted == null) {
+      return;
+    }
+    List<OrderItem> loadedOrders = [];
+    extracted.forEach((orderId, order) {
+      loadedOrders.add(OrderItem(
+        amount: order['amount'],
+        id: orderId,
+        dateTime: DateTime.parse(order['dateTime']),
+        products: (order['products'] as List<dynamic>)
+            .map((item) => CartItem(
+                  id: item['id'],
+                  price: item['price'],
+                  quantity: item['quantity'],
+                  title: item['title'],
+                ))
+            .toList(),
+      ));
+    });
+    _orders = loadedOrders.reversed.toList();
+    notifyListeners();
+  }
+
+  Future<void> addOrder(List<CartItem> cart, double total) async {
+    final url = 'https://native-shopapp-f4694.firebaseio.com/orders.json';
+    final now = DateTime.now();
+    final response = await http.post(
+      url,
+      body: json.encode({
+        'amount': total,
+        'dateTime': now.toIso8601String(),
+        'products': cart
+            .map(
+              (c) => {
+                'id': c.id,
+                'title': c.title,
+                'price': c.price,
+                'quantity': c.quantity,
+              },
+            )
+            .toList()
+      }),
+    );
     _orders.insert(
       0,
       OrderItem(
         amount: total,
-        id: DateTime.now().toString(),
-        dateTime: DateTime.now(),
+        id: json.decode(response.body)['name'],
+        dateTime: now,
         products: cart,
       ),
     );

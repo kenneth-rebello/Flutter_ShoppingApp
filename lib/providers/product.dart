@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:shop_app/screens/edit_product.dart';
 
 class Product with ChangeNotifier {
@@ -26,8 +29,20 @@ class Product with ChangeNotifier {
         imageUrl = newProd.imageUrl,
         isFavorite = false;
 
-  void toggleFavorite() {
+  void toggleFavorite() async {
+    final old = isFavorite;
     isFavorite = !isFavorite;
+    final url = 'https://native-shopapp-f4694.firebaseio.com/products/$id.json';
     notifyListeners();
+    try {
+      http.patch(
+        url,
+        body: json.encode({
+          'isFavorite': isFavorite,
+        }),
+      );
+    } catch (e) {
+      isFavorite = old;
+    }
   }
 }
