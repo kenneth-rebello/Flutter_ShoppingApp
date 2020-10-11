@@ -6,10 +6,28 @@ import '../widgets/main_drawer.dart';
 import '../widgets/user_product_item.dart';
 import '../providers/products_provider.dart';
 
-class UserProducts extends StatelessWidget {
+class UserProducts extends StatefulWidget {
   static const routeName = '/user_products';
+
+  @override
+  _UserProductsState createState() => _UserProductsState();
+}
+
+class _UserProductsState extends State<UserProducts> {
   Future<void> refresher(BuildContext context) async {
-    Provider.of<Products>(context, listen: false).fetchProducts();
+    Provider.of<Products>(context, listen: false).fetchProducts(true);
+  }
+
+  bool _loading = true;
+
+  @override
+  void initState() {
+    Provider.of<Products>(context, listen: false).fetchProducts(true).then((_) {
+      setState(() {
+        _loading = false;
+      });
+    });
+    super.initState();
   }
 
   @override
@@ -28,20 +46,24 @@ class UserProducts extends StatelessWidget {
         ],
       ),
       drawer: MainDrawer(),
-      body: RefreshIndicator(
-        onRefresh: () => refresher(context),
-        child: Padding(
-          padding: EdgeInsets.all(10),
-          child: ListView.builder(
-            itemBuilder: (_, idx) => UserProductItem(
-              productData.items[idx].id,
-              productData.items[idx].title,
-              productData.items[idx].imageUrl,
+      body: _loading
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : RefreshIndicator(
+              onRefresh: () => refresher(context),
+              child: Padding(
+                padding: EdgeInsets.all(10),
+                child: ListView.builder(
+                  itemBuilder: (_, idx) => UserProductItem(
+                    productData.items[idx].id,
+                    productData.items[idx].title,
+                    productData.items[idx].imageUrl,
+                  ),
+                  itemCount: productData.items.length,
+                ),
+              ),
             ),
-            itemCount: productData.items.length,
-          ),
-        ),
-      ),
     );
   }
 }

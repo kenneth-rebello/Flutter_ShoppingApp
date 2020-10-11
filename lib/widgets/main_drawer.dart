@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shop_app/providers/auth.dart';
 import '../screens/orders_screen.dart';
 import '../screens/user_products.dart';
 
@@ -34,6 +36,14 @@ class MainDrawer extends StatelessWidget {
             onTap: () {
               Navigator.of(context)
                   .pushReplacementNamed(UserProducts.routeName);
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.arrow_back),
+            title: Text('Logout'),
+            onTap: () {
+              Navigator.of(context).pop();
+              Provider.of<Auth>(context, listen: false).logout();
             },
           ),
         ],

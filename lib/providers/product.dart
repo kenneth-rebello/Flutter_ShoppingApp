@@ -29,17 +29,16 @@ class Product with ChangeNotifier {
         imageUrl = newProd.imageUrl,
         isFavorite = false;
 
-  void toggleFavorite() async {
+  void toggleFavorite(String token, String userId) async {
     final old = isFavorite;
     isFavorite = !isFavorite;
-    final url = 'https://native-shopapp-f4694.firebaseio.com/products/$id.json';
+    final url =
+        'https://native-shopapp-f4694.firebaseio.com/favorites/$userId/$id.json?auth=$token';
     notifyListeners();
     try {
-      http.patch(
+      http.put(
         url,
-        body: json.encode({
-          'isFavorite': isFavorite,
-        }),
+        body: json.encode(isFavorite),
       );
     } catch (e) {
       isFavorite = old;
